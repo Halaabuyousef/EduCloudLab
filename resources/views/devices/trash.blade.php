@@ -10,7 +10,7 @@
     {{-- Header --}}
     <div class="d-flex justify-content-between align-items-center mb-6">
         <h2 class="mb-0">Trashed Devices</h2>
-       
+
         <div class="d-flex gap-3">
             <a href="{{ route('admin.devices.index') }}" class="btn btn-light">
                 ← Back to All
@@ -40,8 +40,8 @@
                     <tr class="fw-bold fs-6 text-muted">
                         <th>ID</th>
                         <th>Image</th>
-                        <th>Title</th>
-                        <th>Description</th>
+                        <th>Name</th>
+                        <th>Type</th>
                         <th>Status</th>
                         <th>Deleted At</th>
                         <th class="text-end">Actions</th>
@@ -49,31 +49,29 @@
                 </thead>
 
                 <tbody>
-                    @foreach($devices as $row)
-                    <tr data-id="{{ $row->id }}">
-                        <td>{{ $row->id }}</td>
-
+                    @foreach($devices as $device)
+                    <tr>
+                        <td>{{ $device->id }}</td>
                         <td>
-                            @if($row->image)
-                            <img src="{{ asset('images/'.$row->image) }}" width="50" height="50" class="rounded" alt="">
+                            @if($device->image)
+                            <img src="{{ asset('images/devices/'.$device->image) }}" width="50" height="50" class="rounded" alt="">
                             @endif
                         </td>
-
-                        <td>{{ $row->title }}</td>
-                        <td>{{ $row->description }}</td>
-
+                        <td>{{ $device->name }}</td>
+                        <td>{{ $device->type }}</td>
+                        
                         <td>
-                            <span class="badge {{ $row->status==='available'?'badge-success':($row->status==='in_use'?'badge-warning':'badge-secondary') }}">
-                                {{ $row->status }}
+                            <span class="badge {{ $device->status==='online'?'badge-success':'badge-secondary' }}">
+                                {{ $device->status }}
                             </span>
                         </td>
 
-                        <td>{{ $row->deleted_at }}</td>
+                        <td>{{ $device->deleted_at }}</td>
 
                         {{-- الأزرار هنا داخل عمود الأكشنز --}}
                         <td class="text-end text-nowrap">
                             {{-- استرجاع --}}
-                            <form class="d-inline" method="POST" action="{{ route('admin.devices.restore', $row->id) }}">
+                            <form class="d-inline" method="POST" action="{{ route('admin.devices.restore', $device->id) }}">
                                 @csrf
                                 <button class="btn btn-icon btn-success btn-sm" title="Restore">
                                     <i class="fas fa-undo"></i>
@@ -81,7 +79,7 @@
                             </form>
 
                             {{-- حذف نهائي --}}
-                            <form class="d-inline" method="POST" action="{{ route('admin.devices.forceDelete', $row->id) }}">
+                            <form class="d-inline" method="POST" action="{{ route('admin.devices.forceDelete', $device->id) }}">
                                 @csrf
                                 @method('DELETE')
                                 <button class="btn btn-icon btn-danger btn-sm" title="Delete permanently"
@@ -139,7 +137,7 @@
             });
             const data = await res.json();
             if (data.ok) {
-               
+
                 const table = $('#trash_table').DataTable();
                 table.row(tr).remove().draw();
                 showToast(data.message || 'Restored successfully');

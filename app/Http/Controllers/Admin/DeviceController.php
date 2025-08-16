@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use Carbon\Carbon;
 use App\Models\Device;
 use App\Models\Experiment;
 use Illuminate\Http\Request;
@@ -44,7 +45,7 @@ class DeviceController extends Controller
             $request->file('image')->move(public_path('images/devices'), $imgName);
             $data['image'] = $imgName;
         }
-
+        $data['last_update'] = Carbon::now();
         Device::create($data);
 
         return redirect()->route('admin.devices.index')
@@ -82,7 +83,7 @@ class DeviceController extends Controller
             $request->file('image')->move(public_path('images/devices'), $imgName);
             $data['image'] = $imgName;
         }
-
+        $data['last_update'] = Carbon::now();
         $device->update($data);
 
         return redirect()->route('admin.devices.index')

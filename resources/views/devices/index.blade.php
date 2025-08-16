@@ -70,7 +70,8 @@
                                 {{ $device->status }}
                             </span>
                         </td>
-                        <td>{{ $device->last_update ? $device->last_update->format('Y-m-d H:i') : '-' }}</td>
+                        <td>{{ $device->last_update ? \Carbon\Carbon::parse($device->last_update)->format('Y-m-d H:i') : '-' }}</td>
+
                         <td class="text-nowrap">
                             {{-- Edit Button --}}
                             <button type="button" class="btn btn-icon btn-primary btn-sm edit-btn"
