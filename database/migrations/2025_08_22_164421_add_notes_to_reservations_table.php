@@ -11,11 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('experiments', function (Blueprint $table) {
-            
-            $table->dropUnique('experiments_device_id_unique');
-           
-            $table->index('device_id');
+        Schema::table('reservations', function (Blueprint $table) {
+            $table->text('notes')->nullable()->after('status');
         });
     }
 
@@ -24,9 +21,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('experiments', function (Blueprint $table) {
-            $table->dropIndex(['device_id']);
-            $table->unique('device_id');
+        Schema::table('reservations', function (Blueprint $table) {
+            $table->dropColumn('notes');
         });
     }
 };

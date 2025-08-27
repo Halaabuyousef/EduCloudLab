@@ -1,74 +1,47 @@
-@extends('pages.app')
-@section('title' , )
-@section('content')
-<section class="login-section">
-    <div class="login-container">
-        <div class="login-illustration">
-            <h2>مرحبًا بعودتك!</h2>
-            <p>سجل دخولك الآن للوصول إلى آلاف المشاريع والفرص الاستثنائية في أكبر منصة عمل حر عربية</p>
-            <img src="https://cdn.dribbble.com/users/1577044/screenshots/6539426/authentication.png" alt="تسجيل الدخول">
+<x-guest-layout>
+    <!-- Session Status -->
+    <x-auth-session-status class="mb-4" :status="session('status')" />
+
+    <form method="POST" action="{{ route('login') }}">
+        @csrf
+
+        <!-- Email Address -->
+        <div>
+            <x-input-label for="email" :value="__('Email')" />
+            <x-text-input id="email" class="block mt-1 w-full" type="email" name="email" :value="old('email')" required autofocus autocomplete="username" />
+            <x-input-error :messages="$errors->get('email')" class="mt-2" />
         </div>
 
-        <div class="login-form-container">
-            <div class="login-header">
-                <h1>تسجيل الدخول</h1>
-                <p>أدخل بيانات حسابك للوصول إلى لوحة التحكم</p>
-            </div>
+        <!-- Password -->
+        <div class="mt-4">
+            <x-input-label for="password" :value="__('Password')" />
 
-            <form id="loginForm" method="POST" action="{{ route($guard.'.login.submit') }}">
-                @csrf
-                <div class="form-group">
-                    <label for="email"><i class="fas fa-envelope"></i> البريد الإلكتروني</label>
-                    <div class="input-with-icon">
-                        <i class="fas fa-envelope"></i>
-                        <input name="email" type="email" id="email" class="form-control" placeholder="ادخل بريدك الإلكتروني" required>
-                    </div>
-                </div>
+            <x-text-input id="password" class="block mt-1 w-full"
+                            type="password"
+                            name="password"
+                            required autocomplete="current-password" />
 
-                <div class="form-group">
-                    <label for="password"><i class="fas fa-lock"></i> كلمة المرور</label>
-                    <div class="input-with-icon">
-                        <i class="fas fa-lock"></i>
-                        <input name="password" type="password" id="password" class="form-control" placeholder="ادخل كلمة المرور" required>
-                    </div>
-                </div>
-
-                <div class="remember-forgot">
-                    <div class="remember-me">
-                        <input type="checkbox" id="remember">
-                        <label for="remember">تذكرني</label>
-                    </div>
-                    
-                    <a href="#" class="forgot-password">هل نسيت كلمة المرور؟</a>
-                </div>
-
-                <button type="submit" class="btn-login">
-                    <i class="fas fa-sign-in-alt"></i> تسجيل الدخول
-                </button>
-
-                <div class="social-login">
-                    <p>أو سجل الدخول باستخدام</p>
-                    <div class="social-buttons">
-                        <div class="social-btn google">
-                            <i class="fab fa-google"></i>
-                        </div>
-                        <div class="social-btn facebook">
-                            <i class="fab fa-facebook-f"></i>
-                        </div>
-                        <div class="social-btn twitter">
-                            <i class="fab fa-twitter"></i>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="signup-link">
-                    @if ($guard != 'admin')
-                    ليس لديك حساب؟ <a href="{{ route($guard.'.register') }}">إنشاء حساب جديد</a>
-                    @endif
-                </div>
-            </form>
+            <x-input-error :messages="$errors->get('password')" class="mt-2" />
         </div>
-    </div>
-</section>
 
-@endsection
+        <!-- Remember Me -->
+        <div class="block mt-4">
+            <label for="remember_me" class="inline-flex items-center">
+                <input id="remember_me" type="checkbox" class="rounded dark:bg-gray-900 border-gray-300 dark:border-gray-700 text-indigo-600 shadow-sm focus:ring-indigo-500 dark:focus:ring-indigo-600 dark:focus:ring-offset-gray-800" name="remember">
+                <span class="ms-2 text-sm text-gray-600 dark:text-gray-400">{{ __('Remember me') }}</span>
+            </label>
+        </div>
+
+        <div class="flex items-center justify-end mt-4">
+            @if (Route::has('password.request'))
+                <a class="underline text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:focus:ring-offset-gray-800" href="{{ route('password.request') }}">
+                    {{ __('Forgot your password?') }}
+                </a>
+            @endif
+
+            <x-primary-button class="ms-3">
+                {{ __('Log in') }}
+            </x-primary-button>
+        </div>
+    </form>
+</x-guest-layout>

@@ -14,8 +14,10 @@ class ExperimentController extends Controller
     public function index()
     {
         $experiments = Experiment::latest('id')->paginate(10);
-        return view('experiments.index', compact('experiments'));
+        $devices = \App\Models\Device::all(); // أرسل الأجهزة
+        return view('experiments.index', compact('experiments', 'devices'));
     }
+
 
     public function create()
     {
@@ -28,7 +30,7 @@ class ExperimentController extends Controller
         $request->validate([
             'title'       => 'required|string|max:255',
             'description' => 'nullable|string',
-            'device_id'   => 'required|string',
+          
             'status'      => 'required|in:available,in_use,maintenance',
             'image'       => 'nullable|image|mimes:png,jpg,jpeg|max:2048',
         ]);
@@ -46,7 +48,11 @@ class ExperimentController extends Controller
             $data['image'] = $imgName;
         }
 
-        Experiment::create($data);
+        $experiment = Experiment::create($data);
+
+        if ($request->filled('device_ids')) {
+            $experiment->devices()->sync($request->device_ids);
+        }
 
         return redirect()->route('admin.experiments.index')
             ->with('msg', 'Experiment added successfully')->with('type', 'success');
@@ -65,13 +71,13 @@ class ExperimentController extends Controller
         $request->validate([
             'title'       => 'required|string|max:255',
             'description' => 'nullable|string',
-            'device_id'   => 'required|string',
+            'device_ids'   => ['nullable', 'array'],
+            'device_ids.*' => ['integer', 'exists:devices,id'],
             'status'      => 'required|in:available,in_use,maintenance',
             'image'       => 'nullable|image|mimes:png,jpg,jpeg|max:2048',
         ]);
 
-
-        $data = $request->except('_token', '_method');
+        $data = $request->except('_token', '_method', 'device_ids');
         $data['user_id'] = Auth::guard('admin')->id();
 
         if ($request->hasFile('image')) {
@@ -84,6 +90,9 @@ class ExperimentController extends Controller
         }
 
         $experiment->update($data);
+
+        // مهم: تحديث العلاقة مع الأجهزة
+        $experiment->devices()->sync($request->input('device_ids', []));
 
         return redirect()->route('admin.experiments.index')
             ->with('msg', 'Experiment updated successfully')->with('type', 'info');

@@ -34,10 +34,10 @@
                 let alert = new bootstrap.Alert(alertEl);
                 alert.close();
             }
-        }, 3000); // 3 ثواني
+        }, 2000);
     </script>
     @endif
-    {{-- Table --}}
+
     <div class="card">
         <div class="card-body">
             <table id="kt_datatable_example_1" class="table table-row-bordered gy-5 align-middle">
@@ -125,10 +125,7 @@
                         <input type="text" name="description" class="form-control">
                     </div>
 
-                    <div class="mb-3">
-                        <label class="form-label">Device ID</label>
-                        <input type="text" name="device_id" class="form-control" required>
-                    </div>
+
 
                     <div class="mb-3">
                         <label class="form-label">Status</label>
@@ -175,8 +172,15 @@
                     </div>
 
                     <div class="mb-3">
-                        <label class="form-label">Device ID</label>
-                        <input type="text" name="device_id" class="form-control">
+                        <label class="form-label">Devices</label>
+                        <select name="device_ids[]" class="form-select" multiple>
+                            @foreach($devices as $dev)
+                            <option value="{{ $dev->id }}"
+                                {{ isset($experiment) && $experiment->devices->contains($dev->id) ? 'selected' : '' }}>
+                                {{ $dev->name }}
+                            </option>
+                            @endforeach
+                        </select>
                     </div>
 
                     <div class="mb-3">

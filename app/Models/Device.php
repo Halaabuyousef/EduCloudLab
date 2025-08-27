@@ -10,8 +10,8 @@ class Device extends Model
 {
     use HasFactory ,SoftDeletes;
     protected $guarded = [];
-    public function experiment()
+    public function experiments()
     {
-        return $this->hasOne(Experiment::class);
+        return $this->belongsToMany(Experiment::class, 'device_experiment', 'device_id', 'experiment_id');
     }
 }

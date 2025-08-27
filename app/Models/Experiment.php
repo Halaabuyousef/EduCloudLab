@@ -20,10 +20,11 @@ class Experiment extends Model
     {
         return $this->hasMany(Upload::class);
     }
-    public function device()
+    public function devices()
     {
-        return $this->belongsTo(Device::class);
+        return $this->belongsToMany(Device::class, 'device_experiment', 'experiment_id', 'device_id');
     }
+
     public function logs()
     {
         return $this->hasMany(Log::class);

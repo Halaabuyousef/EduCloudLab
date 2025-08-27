@@ -15,7 +15,7 @@ class DeviceController extends Controller
     public function index()
     {
         $devices = Device::latest('id')->paginate(10);
-        $experiments = Experiment::all(); // <--- جلب كل التجارب
+        $experiments = Experiment::all(); 
         return view('devices.index', compact('devices', 'experiments'));
     }
 
@@ -32,11 +32,12 @@ class DeviceController extends Controller
             'name' => 'required|string|max:255',
             'type' => 'required|string|max:100',
             'status' => 'required|in:online,offline',
-            'experiment_id' => 'nullable|exists:experiments,id',
+            'experiment_ids' => 'nullable|array',
+            'experiment_ids.*' => 'exists:experiments,id',
             'image' => 'nullable|image|mimes:png,jpg,jpeg|max:2048'
         ]);
 
-        $data = $request->except('_token');
+        $data = $request->except('_token', 'experiment_ids');
         // $data['user_id'] = Auth::guard('admin')->id();
 
         // رفع الصورة إذا وجدت
@@ -46,8 +47,12 @@ class DeviceController extends Controller
             $data['image'] = $imgName;
         }
         $data['last_update'] = Carbon::now();
-        Device::create($data);
+        $device = Device::create($data);
 
+        // ربط الجهاز بالتجارب
+        if ($request->filled('experiment_ids')) {
+            $device->experiments()->sync($request->experiment_ids);
+        }
         return redirect()->route('admin.devices.index')
             ->with('msg', 'Device added successfully')->with('type', 'success');
     }
@@ -59,6 +64,37 @@ class DeviceController extends Controller
         return view('devices.edit', compact('device', 'experiments'));
     }
 
+    // public function update(Request $request, $id)
+    // {
+    //     $device = Device::findOrFail($id);
+
+    //     $request->validate([
+    //         'name' => 'required|string|max:255',
+    //         'type' => 'required|string|max:100',
+    //         'status' => 'required|in:online,offline',
+    //         'experiment_id' => 'nullable|exists:experiments,id',
+    //         'image' => 'nullable|image|mimes:png,jpg,jpeg|max:2048'
+    //     ]);
+
+
+    //     $data = $request->except('_token', '_method');
+    //     // $data['user_id'] = Auth::guard('admin')->id();
+
+    //     if ($request->hasFile('image')) {
+    //         if ($device->image && file_exists(public_path('images/devices/' . $device->image))) {
+    //             File::delete(public_path('images/devices/' . $device->image));
+    //         }
+    //         $imgName = time() . '_' . uniqid() . '.' . $request->file('image')->getClientOriginalExtension();
+    //         $request->file('image')->move(public_path('images/devices'), $imgName);
+    //         $data['image'] = $imgName;
+    //     }
+    //     $data['last_update'] = Carbon::now();
+    //     $device->update($data);
+
+    //     return redirect()->route('admin.devices.index')
+    //         ->with('msg', 'Device updated successfully')->with('type', 'info');
+    // }
+
     public function update(Request $request, $id)
     {
         $device = Device::findOrFail($id);
@@ -67,13 +103,13 @@ class DeviceController extends Controller
             'name' => 'required|string|max:255',
             'type' => 'required|string|max:100',
             'status' => 'required|in:online,offline',
-            'experiment_id' => 'nullable|exists:experiments,id',
+            'experiment_ids' => 'nullable|array',
+            'experiment_ids.*' => 'exists:experiments,id',
             'image' => 'nullable|image|mimes:png,jpg,jpeg|max:2048'
         ]);
 
-
-        $data = $request->except('_token', '_method');
-        // $data['user_id'] = Auth::guard('admin')->id();
+        // ⚡ استبعاد experiment_ids من البيانات
+        $data = $request->except(['_token', '_method', 'experiment_ids', 'experiment_id']);
 
         if ($request->hasFile('image')) {
             if ($device->image && file_exists(public_path('images/devices/' . $device->image))) {
@@ -83,12 +119,20 @@ class DeviceController extends Controller
             $request->file('image')->move(public_path('images/devices'), $imgName);
             $data['image'] = $imgName;
         }
+
         $data['last_update'] = Carbon::now();
+
+        // تحديث بيانات الجهاز (بدون experiment_ids)
         $device->update($data);
 
+        // تحديث العلاقة مع التجارب
+        $device->experiments()->sync($request->input('experiment_ids', []));
+
         return redirect()->route('admin.devices.index')
-            ->with('msg', 'Device updated successfully')->with('type', 'info');
+            ->with('msg', 'Device updated successfully')
+            ->with('type', 'info');
     }
+
 
     public function destroy($id)
     {

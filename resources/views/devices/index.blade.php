@@ -33,7 +33,7 @@
                 let alert = new bootstrap.Alert(alertEl);
                 alert.close();
             }
-        }, 3000);
+        }, 2000);
     </script>
     @endif
 
@@ -64,7 +64,13 @@
                         </td>
                         <td>{{ $device->name }}</td>
                         <td>{{ $device->type }}</td>
-                        <td>{{ $device->experiment ? $device->experiment->title : '-' }}</td>
+                        <td>
+                            @forelse($device->experiments as $exp)
+                            <span class="badge bg-info">{{ $exp->title }}</span>
+                            @empty
+                            <span class="text-muted">No experiment</span>
+                            @endforelse
+                        </td>
                         <td>
                             <span class="badge {{ $device->status==='online'?'badge-success':'badge-secondary' }}">
                                 {{ $device->status }}
@@ -99,10 +105,10 @@
                 </tbody>
             </table>
 
-            {{-- Pagination --}}
-            <div class="mt-4">
-                {{ $devices->links() }}
-            </div>
+
+
+            {{ $devices->links() }}
+
         </div>
     </div>
 </div>
@@ -133,15 +139,14 @@
                             <option value="offline">offline</option>
                         </select>
                     </div>
-                    <div class="mb-3">
-                        <label class="form-label">Experiment</label>
-                        <select name="experiment_id" class="form-select">
-                            <option value="">--Select Experiment--</option>
-                            @foreach($experiments as $exp)
-                            <option value="{{ $exp->id }}">{{ $exp->title }}</option>
-                            @endforeach
-                        </select>
-                    </div>
+                    <select name="experiment_ids[]" class="form-select" multiple>
+                        @foreach($experiments as $exp)
+                        <option value="{{ $exp->id }}"
+                            {{ isset($device) && $device->experiments->contains($exp->id) ? 'selected' : '' }}>
+                            {{ $exp->title }}
+                        </option>
+                        @endforeach
+                    </select>
                     <div class="mb-3">
                         <label class="form-label">Image</label>
                         <input type="file" name="image" class="form-control">
@@ -183,14 +188,17 @@
                         </select>
                     </div>
                     <div class="mb-3">
-                        <label class="form-label">Experiment</label>
-                        <select name="experiment_id" class="form-select">
-                            <option value="">--Select Experiment--</option>
+                        <label class="form-label">Experiments</label>
+                        <select name="experiment_ids[]" class="form-select" multiple>
                             @foreach($experiments as $exp)
-                            <option value="{{ $exp->id }}">{{ $exp->title }}</option>
+                            <option value="{{ $exp->id }}"
+                                {{ $device->experiments->contains($exp->id) ? 'selected' : '' }}>
+                                {{ $exp->title }}
+                            </option>
                             @endforeach
                         </select>
                     </div>
+
                     <div class="mb-2">
                         <label class="form-label">Image (optional)</label>
                         <input type="file" name="image" class="form-control">

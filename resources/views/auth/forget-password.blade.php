@@ -1,4 +1,4 @@
-@extends('pages.app')
+@extends('master')
 @section('content')
 <section class="reset-section">
     <div class="reset-container">

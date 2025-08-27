@@ -1,6 +1,8 @@
 <?php
 
 return [
+    'defaults' => ['guard' => 'web'],
+    'display_permission_in_exception' => true,
 
     'models' => [
 

@@ -19,4 +19,22 @@ class Reservation extends Model
     {
         return $this->belongsTo(Experiment::class);
     }
+    public const STATUS_SCHEDULED = 'scheduled';
+    public const STATUS_POSTPONED = 'postponed';
+    public const STATUS_COMPLETED = 'completed';
+    public const STATUS_CANCELED  = 'canceled';
+
+    // Scopes
+    public function scopeScheduled($q)
+    {
+        return $q->where('status', self::STATUS_SCHEDULED);
+    }
+    public function scopePostponed($q)
+    {
+        return $q->where('status', self::STATUS_POSTPONED);
+    }
+    public function scopeFinished($q)
+    {
+        return $q->whereIn('status', [self::STATUS_COMPLETED, self::STATUS_CANCELED]);
+    }
 }

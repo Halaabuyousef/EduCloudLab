@@ -16,19 +16,31 @@ class DatabaseSeeder extends Seeder
     {
         // \App\Models\User::factory(10)->create();
 
-        // \App\Models\User::create([
-        //     'name' => 'User',
-        //     'email' => 'user@example.com',
-        //     'password' => Hash::make('123456789')
-        // ]);
-
-        // \App\Models\Admin::create([
-        //     'name' => 'Admin',
-        //     'email' => 'admin@example.com',
-        //     'password'=>Hash::make('123456789')
-        // ]);
-        $this->call([
-            AdminSeeder::class,
+        \App\Models\User::create([
+            'name' => 'User8',
+            'email' => 'user8@example.com',
+            'password' => Hash::make('123456789')
         ]);
+
+        \App\Models\Admin::create([
+            'name' => 'Admin',
+            'email' => 'admin@example.com',
+            'password'=>Hash::make('123456789')
+        ]);
+        \App\Models\Admin::create([
+            'name' => 'Hala Aboyousef',
+            'email' => 'halaaboyousef01@example.com',
+            'password' => Hash::make('123456789')
+        ]);
+        \App\Models\Supervisor::create([
+            'name' => 'Supervisor',
+            'email' => 'supervisor78@example.com',
+            'password'=>Hash::make('123456789'),
+            'phone' => '0599166117',
+            'country' => 'gaza',
+        ]);
+        // $this->call([
+        //     AdminSeeder::class,
+        // ]);
     }
 }
