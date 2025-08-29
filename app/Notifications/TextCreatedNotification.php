@@ -36,8 +36,9 @@ class TextCreatedNotification extends Notification
     public function toMail(object $notifiable): MailMessage
     {
         return (new MailMessage)
-                    ->line('رسالة من الادارة ')
-                    ->line($this->textMail->text);
+            ->subject('رسالة من الإدارة')     
+            ->line('رسالة من الادارة ')
+            ->line($this->textMail->text);
     }
 
     /**

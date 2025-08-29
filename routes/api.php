@@ -2,6 +2,7 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Api\DeviceTokenController;
 
 /*
 |--------------------------------------------------------------------------
@@ -14,6 +15,16 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
+Route::middleware('guest:sanctum')->group(function(){
+  
+        Route::post('/device-tokens', [DeviceTokenController::class, 'store']);
+        Route::delete('/device-tokens/{token}', [DeviceTokenController::class, 'destroy']);
+
+// Route::get('expermints',function(){
+// return response()->json();
+// });
+    // Route::post('expermint', function (Request $request) {
+    //     dd($request->all());
+    //     return response()->json();
+    // });
 });

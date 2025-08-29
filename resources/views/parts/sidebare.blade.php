@@ -53,6 +53,64 @@
                     </a>
                 </div>
                 <div class="menu-item">
+                    <div class="menu-content">
+                        <div class="separator mx-1 my-4"></div>
+                    </div>
+                </div>
+                <div class="menu-item">
+                    <a class="menu-link" href="{{ route('admin.admins.index') }}">
+                        <span class="menu-icon">
+                            <!--begin::Svg Icon | path: icons/duotune/coding/cod003.svg-->
+                            <span class="svg-icon svg-icon-2">
+                                <i class="fas fa-id-card"></i>
+                            </span>
+                            <!--end::Svg Icon-->
+                        </span>
+                        <span class="menu-title">Admins</span>
+                    </a>
+                </div>
+                <div class="menu-item">
+                    <a class="menu-link" href="{{ route('admin.universities.index') }}">
+                        <span class="menu-icon">
+                            <!--begin::Svg Icon | path: icons/duotune/coding/cod003.svg-->
+                            <span class="svg-icon svg-icon-2">
+                                <i class="far fa-building"></i>
+                            </span>
+                            <!--end::Svg Icon-->
+                        </span>
+                        <span class="menu-title">Universities</span>
+                    </a>
+                </div>
+                <div class="menu-item">
+                    <a class="menu-link" href="{{ route('admin.supervisors.index') }}">
+                        <span class="menu-icon">
+                            <!--begin::Svg Icon | path: icons/duotune/coding/cod003.svg-->
+                            <span class="svg-icon svg-icon-2">
+                                <i class="fas fa-users"></i>
+                            </span>
+                            <!--end::Svg Icon-->
+                        </span>
+                        <span class="menu-title">Supervisor</span>
+                    </a>
+                </div>
+                <div class="menu-item">
+                    <a class="menu-link" href="{{ route('admin.users.index') }}">
+                        <span class="menu-icon">
+                            <!--begin::Svg Icon | path: icons/duotune/coding/cod003.svg-->
+                            <span class="svg-icon svg-icon-2">
+                                <i class="fas fa-id-card"></i>
+                            </span>
+                            <!--end::Svg Icon-->
+                        </span>
+                        <span class="menu-title">Users</span>
+                    </a>
+                </div>
+                <div class="menu-item">
+                    <div class="menu-content">
+                        <div class="separator mx-1 my-4"></div>
+                    </div>
+                </div>
+                <div class="menu-item">
                     <a class="menu-link" href="{{ route('admin.roles.index') }}">
                         <span class="menu-icon">
                             <!--begin::Svg Icon | path: icons/duotune/general/gen014.svg-->
@@ -180,48 +238,9 @@
                 </div>
 
 
-                <div class="menu-item">
-                    <div class="menu-content">
-                        <div class="separator mx-1 my-4"></div>
-                    </div>
-                </div>
-                <div class="menu-item">
-                    <a class="menu-link" href="{{ route('admin.users.index') }}">
-                        <span class="menu-icon">
-                            <!--begin::Svg Icon | path: icons/duotune/coding/cod003.svg-->
-                            <span class="svg-icon svg-icon-2">
-                                <i class="fas fa-id-card"></i>
-                            </span>
-                            <!--end::Svg Icon-->
-                        </span>
-                        <span class="menu-title">Users</span>
-                    </a>
-                </div>
-                <div class="menu-item">
-                    <a class="menu-link" href="{{ route('admin.supervisors.index') }}">
-                        <span class="menu-icon">
-                            <!--begin::Svg Icon | path: icons/duotune/coding/cod003.svg-->
-                            <span class="svg-icon svg-icon-2">
-                                <i class="fas fa-users"></i>
-                            </span>
-                            <!--end::Svg Icon-->
-                        </span>
-                        <span class="menu-title">Supervisor</span>
-                    </a>
-                </div>
 
-                <div class="menu-item">
-                    <a class="menu-link" href="{{ route('admin.universities.index') }}">
-                        <span class="menu-icon">
-                            <!--begin::Svg Icon | path: icons/duotune/coding/cod003.svg-->
-                            <span class="svg-icon svg-icon-2">
-                                <i class="far fa-building"></i>
-                            </span>
-                            <!--end::Svg Icon-->
-                        </span>
-                        <span class="menu-title">Universities</span>
-                    </a>
-                </div>
+
+
                 <div class="menu-item">
                     <div class="menu-content">
                         <div class="separator mx-1 my-4"></div>

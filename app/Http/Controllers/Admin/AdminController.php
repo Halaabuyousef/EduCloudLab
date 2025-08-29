@@ -12,6 +12,110 @@ use Illuminate\Validation\Rule;
 
 class AdminController extends Controller
 {
+
+
+    public function index()
+    {
+        $admins = Admin::paginate(10);
+        return view('admin.admins.index', compact('admins'));
+    }
+
+    public function create()
+    {
+        return view('admin.admins.create');
+    }
+
+    public function store(Request $request)
+    {
+        $data = $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|max:255|unique:admins,email',
+            'password' => 'required|min:8|confirmed',
+            'image' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
+        ]);
+
+        $data['password'] = Hash::make($data['password']);
+
+        if ($request->hasFile('image')) {
+            $data['image'] = $request->file('image')->store('admins', 'public'); // storage/app/public/admins
+        }
+
+        \App\Models\Admin::create($data);
+
+        return back()->with(['msg' => 'Admin created successfully', 'type' => 'success']);
+    }
+
+    public function update(Request $request, $id)
+    {
+        $admin = \App\Models\Admin::findOrFail($id);
+
+        $data = $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|max:255|unique:admins,email,' . $admin->id,
+            'password' => 'nullable|min:8|confirmed',
+            'image' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
+        ]);
+
+        if (!empty($data['password'])) {
+            $data['password'] = Hash::make($data['password']);
+        } else {
+            unset($data['password']);
+        }
+
+        if ($request->hasFile('image')) {
+            // حذف القديمة إن وجدت
+            if ($admin->image && Storage::disk('public')->exists($admin->image)) {
+                Storage::disk('public')->delete($admin->image);
+            }
+            $data['image'] = $request->file('image')->store('admins', 'public');
+        }
+
+        $admin->update($data);
+
+        return back()->with(['msg' => 'Admin updated successfully', 'type' => 'success']);
+    }
+
+    public function edit($id)
+    {
+        $admin = Admin::findOrFail($id);
+        return view('admin.admins.edit', compact('admin'));
+    }
+
+ 
+
+    public function destroy($id)
+    {
+        $admin = Admin::findOrFail($id);
+        $admin->delete();
+        return redirect()->route('admin.admins.index')->with('msg', 'Admin moved to trash')->with('type','warning');
+    }
+
+
+
+    public function trash()
+    {
+        $admins = \App\Models\Admin::onlyTrashed()->paginate(10);
+        return view('admin.admins.trash', compact('admins'));
+    }
+
+    public function restore($id)
+    {
+        $admin = \App\Models\Admin::onlyTrashed()->findOrFail($id);
+        $admin->restore();
+        return redirect()->route('admin.admins.trash')
+            ->with('msg', 'Admin restored successfully!')
+            ->with('type', 'success');
+    }
+
+    public function forceDelete($id)
+    {
+        $admin = \App\Models\Admin::onlyTrashed()->findOrFail($id);
+        $admin->forceDelete();
+        return redirect()->route('admin.admins.trash')
+            ->with('msg', 'Admin permanently deleted!')
+            ->with('type', 'danger');
+    }
+
     public function dashboard()
     {
         return view('admin.dashboard');

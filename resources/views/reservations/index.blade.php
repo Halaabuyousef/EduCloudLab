@@ -3,7 +3,7 @@
 
 @section('content')
 <div class="container-xxl py-6">
-
+  
     <div class="d-flex justify-content-between align-items-center mb-6">
         <h2 class="mb-0">Reservations</h2>
         <div class="d-flex gap-3">
@@ -173,7 +173,7 @@
             'user_id': 'user_id',
             'start_time': 'start_time',
             'end_time': 'end_time',
-            'status': 'status',
+          
             'notes': 'notes'
         };
 
