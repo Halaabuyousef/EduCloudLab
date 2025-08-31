@@ -8,17 +8,25 @@ use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
 class Kernel extends ConsoleKernel
 {
     /**
+     * اجعل كل الجدولة على نفس المنطقة الزمنية
+     */
+    protected function scheduleTimezone()
+    {
+        return 'Asia/Gaza'; // أو 'Asia/Hebron' لو بتحب توحّدها
+    }
+
+    /**
      * Define the application's command schedule.
      */
     protected function schedule(Schedule $schedule)
     {
-
-        // 1) مزامنة حالة التجارب – الأمر جاهز ويقبل withoutOverlapping بدون اسم
+        // 1) Sync experiments
         $schedule->command('experiments:sync-status')
-            ->everyMinute()->timezone('Asia/Gaza')
-            ->withoutOverlapping();
+            ->everyMinute()
+            ->withoutOverlapping()     // للأوامر (command) لا تحتاج name
+            ->runInBackground();
 
-        // 2) Pending -> Active
+        
         $schedule->call(function () {
             $now = now();
 
@@ -31,7 +39,7 @@ class Kernel extends ConsoleKernel
                         $old = $reservation->status;
                         $reservation->update(['status' => 'active']);
 
-                        if ($old === 'pending') {
+                        if ($old === 'pending' && $reservation->user) {
                             $reservation->user->notify(
                                 new \App\Notifications\ReservationStarted($reservation)
                             );
@@ -40,17 +48,18 @@ class Kernel extends ConsoleKernel
                 });
         })
             ->everyMinute()
-            ->name('reservations-activate')->timezone('Asia/Gaza')
-            ->withoutOverlapping();
-
-
-        $schedule->command('reservations:notify-by-time')
-            ->everyMinute()
-            ->timezone('Asia/Gaza')
+            ->name('reservations-activate')
             ->withoutOverlapping()
-            ->name('reservations-notify-by-time');
+            ->runInBackground();
 
-        // 3) Active -> Completed
+        // 3) إشعارات الوقت (مرة واحدة فقط — أزل التكرار)
+        $schedule->command('reservations:notify-by-time', ['--window' => 10])
+            ->everyMinute()
+            ->name('reservations-notify-by-time')
+            ->withoutOverlapping()
+            ->runInBackground();
+
+        // 4) Active -> Completed  (Closure)
         $schedule->call(function () {
             $now = now();
 
@@ -62,7 +71,7 @@ class Kernel extends ConsoleKernel
                         $old = $reservation->status;
                         $reservation->update(['status' => 'completed']);
 
-                        if ($old === 'active') {
+                        if ($old === 'active' && $reservation->user) {
                             $reservation->user->notify(
                                 new \App\Notifications\ReservationCompleted($reservation)
                             );
@@ -71,14 +80,9 @@ class Kernel extends ConsoleKernel
                 });
         })
             ->everyMinute()
-            ->name('reservations-complete')->timezone('Asia/Gaza')
-            ->withoutOverlapping();
-
-        $schedule->command('reservations:notify-by-time')
-            ->everyMinute()
-            ->timezone('Asia/Gaza')
+            ->name('reservations-complete')
             ->withoutOverlapping()
-            ->name('reservations-notify-by-time');
+            ->runInBackground();
     }
 
     /**
@@ -87,7 +91,6 @@ class Kernel extends ConsoleKernel
     protected function commands(): void
     {
         $this->load(__DIR__ . '/Commands');
-
         require base_path('routes/console.php');
     }
 }

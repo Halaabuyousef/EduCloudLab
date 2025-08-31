@@ -3,7 +3,7 @@
 
 @section('content')
 <div class="container-xxl py-6">
-  
+
     <div class="d-flex justify-content-between align-items-center mb-6">
         <h2 class="mb-0">Reservations</h2>
         <div class="d-flex gap-3">
@@ -17,15 +17,24 @@
         </div>
     </div>
 
-    @if(session('msg'))
-    <div id="alertBox" class="alert alert-{{ session('type') }} alert-dismissible fade show">
-        {{ session('msg') }} <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    {{-- Alerts --}}
+    @if (session('msg'))
+    <div id="alertBox"
+        class="alert alert-{{ session('type') }} alert-dismissible fade show"
+        role="alert"
+        style="background-color: #dcd0f7; color: #000;">
+        {{ session('msg') }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
     <script>
-        setTimeout(() => {
-            let el = document.getElementById('alertBox');
-            if (el) new bootstrap.Alert(el).close();
-        }, 1800);
+        setTimeout(function() {
+            let alertEl = document.getElementById('alertBox');
+            if (alertEl) {
+                // Bootstrap 5 way to close programmatically
+                let alert = new bootstrap.Alert(alertEl);
+                alert.close();
+            }
+        }, 1000);
     </script>
     @endif
 
@@ -173,7 +182,7 @@
             'user_id': 'user_id',
             'start_time': 'start_time',
             'end_time': 'end_time',
-          
+
             'notes': 'notes'
         };
 

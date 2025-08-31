@@ -41,23 +41,28 @@
 @endsection
 
 @section('content')
-
+{{-- Alerts --}}
 @if (session('msg'))
 <div id="alertBox"
     class="alert alert-{{ session('type') }} alert-dismissible fade show"
     role="alert"
-    style="background-color:#dcd0f7;color:#000;">
+    style="background-color: #dcd0f7; color: #000;">
     {{ session('msg') }}
     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
 </div>
-
 <script>
     setTimeout(function() {
-        let el = document.getElementById('alertBox');
-        if (el) new bootstrap.Alert(el).close();
-    }, 2000);
+        let alertEl = document.getElementById('alertBox');
+        if (alertEl) {
+            // Bootstrap 5 way to close programmatically
+            let alert = new bootstrap.Alert(alertEl);
+            alert.close();
+        }
+    }, 1000);
 </script>
 @endif
+
+
 
 <div class="card mb-8">
     <div class="card-header align-items-center">
@@ -82,7 +87,7 @@
         </div>
     </div>
 
-    <div class="card-body py-0">
+    <div class="card-body p-5">
         <div class="table-responsive">
             <table class="table table-row-dashed align-middle">
                 <thead>

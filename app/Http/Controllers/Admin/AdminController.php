@@ -203,4 +203,5 @@ class AdminController extends Controller
 
         return back()->with(['msg' => 'Password updated', 'type' => 'success']);
     }
+
 }

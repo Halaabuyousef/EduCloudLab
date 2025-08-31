@@ -247,7 +247,7 @@
                     </div>
                 </div>
                 <div class="menu-item">
-                    <a class="menu-link" href="{{ route('admin.universities.index') }}">
+                    <a class="menu-link" href="{{ route('admin.about') }}">
                         <span class="menu-icon">
                             <!--begin::Svg Icon | path: icons/duotune/coding/cod003.svg-->
                             <span class="svg-icon svg-icon-2">
@@ -263,7 +263,7 @@
                 </div>
 
                 <div class="menu-item">
-                    <a class="menu-link" href="{{ route('admin.universities.index') }}">
+                    <a class="menu-link" href="{{ route('admin.contacts.index') }}">
                         <span class="menu-icon">
                             <!--begin::Svg Icon | path: icons/duotune/coding/cod003.svg-->
                             <span class="svg-icon svg-icon-2">
@@ -275,16 +275,20 @@
                     </a>
                 </div>
                 <div class="menu-item">
-                    <a class="menu-link" href="{{ route('admin.dashboard') }}">
+                    <a href="#" id="logoutLink" class="menu-link">
                         <span class="menu-icon">
-                            <!--begin::Svg Icon | path: icons/duotune/general/gen014.svg-->
                             <span class="svg-icon svg-icon-2">
                                 <i class="fas fa-sign-out-alt"></i>
                             </span>
-                            <!--end::Svg Icon-->
                         </span>
                         <span class="menu-title">Logout</span>
                     </a>
+
+                    <form id="logoutForm"
+                        action="{{ auth('admin')->check() ? route('admin.logout') : route('logout') }}"
+                        method="POST" class="d-none">
+                        @csrf
+                    </form>
                 </div>
             </div>
             <!--end::Menu-->

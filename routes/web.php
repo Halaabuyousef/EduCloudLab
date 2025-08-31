@@ -10,7 +10,7 @@ use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Admin\RoleController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\AdminController;
-use App\Http\Controllers\Web\ContactController;
+use App\Http\Controllers\web\ContactController;
 use App\Http\Controllers\Admin\DeviceController;
 use App\Http\Controllers\Admin\TextMailController;
 use App\Http\Controllers\Admin\DashboardController;
@@ -63,13 +63,15 @@ require __DIR__ . '/auth.php';
 
 
 Route::prefix('admin')->name('admin.')->middleware(['guest:admin'])->group(function () {
-    Route::get('login', [AuthController::class, 'indexLogin'])->name('indexLogin')->defaults('guard', 'admin');
+    Route::get('login', [AuthController::class, 'indexLogin'])->name('login')->defaults('guard', 'admin');
     Route::post('login', [AuthController::class, 'login'])->name('login.submit')->defaults('guard', 'admin');
+
 });
 Route::prefix('admin')->name('admin.')->middleware('auth:admin')->group(function () {
     Route::get('dashboard', [DashboardController::class, 'index'])
         ->name('dashboard')
         ->middleware('auth:admin');
+    Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
     Route::get('experiments/trash', [ExperimentController::class, 'trash'])->name('experiments.trash');
 
     Route::post('experiments/{id}/restore',      [ExperimentController::class, 'restore'])->name('experiments.restore');
@@ -84,7 +86,7 @@ Route::prefix('admin')->name('admin.')->middleware('auth:admin')->group(function
     Route::delete('devices/{id}/force-delete', [DeviceController::class, 'forceDelete'])->name('devices.forceDelete');
     Route::resource('devices', DeviceController::class);
 
-    Route::resource('reservations', ReservationController::class);
+    // Route::resource('reservations', ReservationController::class);
 
 
     Route::patch('/reservations/{reservation}/status', [ReservationController::class, 'updateStatus'])->name('reservations.updateStatus');
@@ -150,13 +152,32 @@ Route::prefix('admin')->name('admin.')->middleware('auth:admin')->group(function
     Route::delete('admins/{id}/force-delete', [AdminController::class, 'forceDelete'])->name('admins.forceDelete');
     Route::resource('admins', AdminController::class);
 
+    Route::get('contacts',                    ContactMessageController::class)->name('contacts.index');
+    Route::get('contacts/{message}',         [ContactMessageController::class, 'show'])->name('contacts.show');
+    Route::patch('contacts/{message}/read',  [ContactMessageController::class, 'markRead'])->name('contacts.read');
+    Route::patch('contacts/{message}/unread', [ContactMessageController::class, 'markUnread'])->name('contacts.unread');
+    Route::delete('contacts/{message}',      [ContactMessageController::class, 'destroy'])->name('contacts.destroy');
 
-    Route::middleware('throttle:5,1')->group(function () {
-        Route::get('/contact', [ContactController::class, 'create'])->name('contact.create');
-        Route::post('/contact', [ContactController::class, 'store'])->name('contact.store');
-    });
-    Route::get('/admin/contacts', ContactMessageController::class)
-        ->name('admin.contacts.index');
+    // ردّ بالإيميل من الداشبورد (POST فورم)
+    Route::post('contacts/{message}/reply',  [ContactMessageController::class, 'reply'])->name('contacts.reply');
+
+    // تصدير CSV
+    Route::get('contacts-export',            [ContactMessageController::class, 'export'])->name('contacts.export');
+
+    // Badge للعدد غير المقروء (AJAX بالنافبار)
+    Route::get('contacts-badge',             [ContactMessageController::class, 'badge'])->name('contacts.badge');
+
+        // Route::get('/contacts/badge', [ContactController::class, 'badge'])->name('contacts.badge');
+        // Route::get('/contacts/dropdown', [ContactController::class, 'dropdown'])->name('contacts.dropdown'); // 👈 هذا اللي ناقص
+        // Route::resource('/contacts', ContactController::class);
+    // Route::middleware('throttle:5,1')->group(function () {
+    //     Route::get('/contact', [ContactController::class, 'create'])->name('contact.create');
+    //     Route::post('/contact', [ContactController::class, 'store'])->name('contact.store');
+    // });
+    // Route::get('/admin/contacts', ContactMessageController::class)
+    //     ->name('admin.contacts.index');
+
+
     Route::get('notifications', [NotificationController::class, 'index'])
         ->name('notifications.index');
 
@@ -169,6 +190,10 @@ Route::prefix('admin')->name('admin.')->middleware('auth:admin')->group(function
     Route::get('notifications/badge',     [NotificationController::class, 'badge'])->name('notifications.badge');
     Route::get('notifications/dropdown', [NotificationController::class, 'dropdown'])
         ->name('notifications.dropdown'); // يرجع HTML للقائمة
+   
+        Route::get('/about', [\App\Http\Controllers\Admin\AboutController::class, 'index'])
+        ->name('about');
+
 
 });
 Route::post('admin/text-mails', [TextMailController::class, 'store'])->name('admin.text-mails.store');
@@ -188,14 +213,16 @@ Route::post('admin/text-mails', [TextMailController::class, 'store'])->name('adm
 
 //     return '✅ Test email sent to ' . $to;
 // });
+// routes/web.php
+
 
 
 
 Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
 Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
 Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
-Route::get('/test-notification', function () {
-    $admin = Admin::first(); // أو Auth::guard('admin')->user()
-    $admin->notify(new TestPing('إشعار تجريبي من Route!'));
-    return 'Notification sent!';
-});
+// Route::get('/test-notification', function () {
+//     $admin = Admin::first(); // أو Auth::guard('admin')->user()
+//     $admin->notify(new TestPing('إشعار تجريبي من Route!'));
+//     return 'Notification sent!';
+// });

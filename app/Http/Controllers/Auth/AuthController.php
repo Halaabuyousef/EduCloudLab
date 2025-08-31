@@ -38,6 +38,7 @@ class AuthController extends Controller
         }
         return redirect()->back();
     }
+   
 
     // function indexRegister(Request $request)
     // {
@@ -144,10 +145,21 @@ class AuthController extends Controller
     }
 
 
-    function logout(Request $request)
+    // function logout(Request $request)
+    // {
+    //     $guard = $request->route('guard');
+    //     Auth::guard($guard)->logout();
+       
+    // }
+    public function logout(Request $request)
     {
         $guard = $request->route('guard');
-        Auth::guard($guard)->logout();
-        return redirect()->route("$guard.login");
+        
+        Auth::guard('admin')->logout();
+
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+
+        return redirect()->route('admin.login');
     }
 }

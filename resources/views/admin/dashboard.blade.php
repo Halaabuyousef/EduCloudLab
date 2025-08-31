@@ -4,7 +4,26 @@
 
 @section('content')
 <div class="container py-0">
-
+    {{-- Alerts --}}
+    @if (session('msg'))
+    <div id="alertBox"
+        class="alert alert-{{ session('type') }} alert-dismissible fade show"
+        role="alert"
+        style="background-color: #dcd0f7; color: #000;">
+        {{ session('msg') }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    <script>
+        setTimeout(function() {
+            let alertEl = document.getElementById('alertBox');
+            if (alertEl) {
+                // Bootstrap 5 way to close programmatically
+                let alert = new bootstrap.Alert(alertEl);
+                alert.close();
+            }
+        }, 1000);
+    </script>
+    @endif
     {{-- Header --}}
     <div class="card border-0 mb-6 shadow-sm">
         <div class="card-body p-6 d-flex align-items-center justify-content-between flex-wrap gap-4">

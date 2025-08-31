@@ -34,7 +34,7 @@
                 let alert = new bootstrap.Alert(alertEl);
                 alert.close();
             }
-        }, 2000);
+        }, 1000);
     </script>
     @endif
 
@@ -116,11 +116,11 @@
                     <div class="modal-body">
                         <div class="mb-3">
                             <label class="form-label">Name</label>
-                            <input type="text" name="name" class="form-control" value="{{ $admin->name }}" required>
+                            <input type="text" name="name" class="form-control">
                         </div>
                         <div class="mb-3">
                             <label class="form-label">Email</label>
-                            <input type="email" name="email" class="form-control" value="{{ $admin->email }}" required>
+                            <input type="email" name="email" class="form-control">
                         </div>
 
                         <div class="mb-3">
@@ -133,7 +133,7 @@
                         </div>
 
                         <div class="mb-3">
-                            <label class="form-label">Image (optional)</label>
+                            <label class="form-label">Image </label>
                             <input type="file" name="image" class="form-control" accept="image/*">
                             @if($admin->image)
                             <img src="{{ asset('storage/'.$admin->image) }}" class="mt-2 rounded-circle" style="width:56px;height:56px;">
@@ -206,13 +206,16 @@
         if (!btn) return;
 
         const form = document.getElementById('edit_form');
-        form.action = btn.dataset.updateUrl; // set PUT URL
+        form.action = btn.dataset.updateUrl; // مسار PUT الصحيح
 
-        form.querySelector('input[name="title"]').value = btn.dataset.title || '';
-        form.querySelector('input[name="description"]').value = btn.dataset.description || '';
-        form.querySelector('input[name="device_id"]').value = btn.dataset.device_id || '';
-        form.querySelector('select[name="status"]').value = btn.dataset.status || 'available';
+        // املأ الحقول
+        form.querySelector('input[name="name"]').value = btn.dataset.name || '';
+        form.querySelector('input[name="email"]').value = btn.dataset.email || '';
+        form.querySelector('input[name="password"]').value = '';
+        form.querySelector('input[name="password_confirmation"]').value = '';
+        form.querySelector('input[name="image"]').value = ''; // امسح أي اختيار سابق
 
+        // معاينة الصورة
         const preview = document.getElementById('edit_preview');
         if (btn.dataset.image) {
             preview.src = btn.dataset.image;
@@ -221,11 +224,9 @@
             preview.removeAttribute('src');
             preview.style.display = 'none';
         }
-
-        form.querySelector('input[name="image"]').value = ''; // clear previous file
     });
 
-    // (Optional) reset on close
+    // reset عند إغلاق المودال (اختياري)
     document.getElementById('edit-modal').addEventListener('hidden.bs.modal', function() {
         const f = document.getElementById('edit_form');
         f.reset();
@@ -274,5 +275,5 @@
         });
     });
 </script>
- 
+
 @endsection

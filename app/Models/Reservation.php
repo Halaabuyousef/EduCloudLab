@@ -11,7 +11,10 @@ class Reservation extends Model
     protected $guarded = [];
     protected $casts = [
         'start_time' => 'datetime',
-        'end_time'   => 'datetime',
+        'end_time' => 'datetime',
+        'prestart_notified_at' => 'datetime',
+        'notified_started_at' => 'datetime',
+        'notified_completed_at' => 'datetime',
     ];
 
     // نخليها تظهر تلقائياً كخاصية إضافية

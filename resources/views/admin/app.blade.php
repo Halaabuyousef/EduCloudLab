@@ -839,24 +839,7 @@ License: For each use you must have a valid license purchased only from above li
 									<!--end::Search-->
 								</div>
 								<!--end::Search-->
-								<!--begin::Activities-->
-								<div class="d-flex align-items-center ms-1 ms-lg-3">
-									<!--begin::Drawer toggle-->
-									<div class="btn btn-icon btn-icon-muted btn-active-light btn-active-color-primary w-30px h-30px w-md-40px h-md-40px" id="kt_activities_toggle">
-										<!--begin::Svg Icon | path: icons/duotune/general/gen032.svg-->
-										<span class="svg-icon svg-icon-1">
-											<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
-												<rect x="8" y="9" width="3" height="10" rx="1.5" fill="black" />
-												<rect opacity="0.5" x="13" y="5" width="3" height="14" rx="1.5" fill="black" />
-												<rect x="18" y="11" width="3" height="8" rx="1.5" fill="black" />
-												<rect x="3" y="13" width="3" height="6" rx="1.5" fill="black" />
-											</svg>
-										</span>
-										<!--end::Svg Icon-->
-									</div>
-									<!--end::Drawer toggle-->
-								</div>
-								<!--end::Activities-->
+
 								<!--begin::Notifications-->
 								<div class="d-flex align-items-center ms-1 ms-lg-3">
 									<!--begin::Menu- wrapper-->
@@ -869,7 +852,7 @@ License: For each use you must have a valid license purchased only from above li
 												<i class="fas fa-bell"></i>
 												<span id="notif-badge"
 													class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger
-                 @if(($adminUnreadCount ?? 0) == 0) d-none @endif">
+              										   @if(($adminUnreadCount ?? 0) == 0) d-none @endif">
 													{{ $adminUnreadCount ?? 0 }}
 												</span>
 											</a>
@@ -895,9 +878,28 @@ License: For each use you must have a valid license purchased only from above li
 										<!--end::Menu wrapper-->
 									</div>
 								</div>
+
 								<!--end::Notifications-->
 
+								<!--begin::Messages-->
+								<div class="d-flex align-items-center ms-1 ms-lg-3">
 
+									<li class="nav-item position-relative">
+										<a href="{{ route('admin.contacts.index') }}" class="nav-link d-flex align-items-center">
+											<i class="fas fa-envelope me-1"></i>
+											<span>Messages</span>
+											<span id="contactBadge"
+												class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
+												style="font-size: .65rem; display: none;"
+												aria-live="polite"
+												aria-atomic="true">
+												0
+											</span>
+										</a>
+									</li>
+
+								</div>
+								<!--end::Messages-->
 								<!--begin::User menu-->
 
 								@php
@@ -941,7 +943,7 @@ License: For each use you must have a valid license purchased only from above li
 													<div class="fw-bolder d-flex align-items-center fs-5">{{ Auth::guard('admin')->user()->name  }}
 														<span class="badge badge-light-success fw-bolder fs-8 px-2 py-1 ms-2">Pro</span>
 													</div>
-													<a href="#" class="fw-bold text-muted text-hover-primary fs-7" {{ Auth::guard('admin')->user()->email  }}</a>
+													<a href="#" class="fw-bold text-muted text-hover-primary fs-7"> {{ Auth::guard('admin')->user()->email  }}</a>
 												</div>
 												<!--end::Username-->
 											</div>
@@ -966,9 +968,19 @@ License: For each use you must have a valid license purchased only from above li
 										</div>
 										<!--end::Menu item-->
 										<!--begin::Menu item-->
+
 										<div class="menu-item px-5">
-											<a href="../../demo1/dist/authentication/flows/basic/sign-in.html" class="menu-link px-5">Sign Out</a>
+											<a href="#" id="dropdownLogoutLink" class="menu-link px-5">
+												<span class="menu-icon">
+													<i class="fas fa-sign-out-alt me-2"></i>
+												</span>
+												<span class="menu-title">Sign Out</span>
+											</a>
 										</div>
+
+										<form id="dropdownLogoutForm" method="POST" action="{{ route('admin.logout') }}" class="d-none">
+											@csrf
+										</form>
 										<!--end::Menu item-->
 										<!--begin::Menu separator-->
 										<div class="separator my-2"></div>
@@ -5327,6 +5339,118 @@ License: For each use you must have a valid license purchased only from above li
 
 			// حدّث كل 25 ثانية (يمكن تغييرها)
 			setInterval(refreshNotifications, 25000);
+		});
+	</script>
+	<script>
+		(function() {
+			const BADGE_URL = @json(route('admin.contacts.badge')); // يرجع { unread: N }
+			const badgeEl = document.getElementById('contactBadge');
+
+			async function fetchUnread() {
+				try {
+					const res = await fetch(BADGE_URL, {
+						cache: 'no-store',
+						headers: {
+							'Accept': 'application/json'
+						}
+					});
+					if (!res.ok) throw new Error('HTTP ' + res.status);
+					const data = await res.json();
+					const n = Number(data.unread ?? 0);
+
+					if (n > 0) {
+						badgeEl.textContent = (n > 99) ? '99+' : String(n);
+						badgeEl.style.display = '';
+						badgeEl.setAttribute('title', n + ' new message(s)');
+						badgeEl.setAttribute('aria-label', n + ' new message(s)');
+					} else {
+						badgeEl.style.display = 'none';
+					}
+				} catch (e) {
+					// اختياري: لو بدك تظهر أي لوج في الكونسول
+					// console.debug('contacts.badge error:', e);
+				}
+			}
+
+			// حمّل مباشرة عند فتح الصفحة
+			fetchUnread();
+
+			// حدّث كل 60 ثانية
+			let timer = setInterval(fetchUnread, 60_000);
+
+			// عند رجوع التركيز للتبويب (لتحديث أسرع)
+			document.addEventListener('visibilitychange', function() {
+				if (!document.hidden) fetchUnread();
+			});
+
+			// اختياري: تحديث أسرع بعد أي عملية حذف/قراءة تتم عبر POST/FORM (إن وجدت)
+			window.addEventListener('contact:refreshBadge', fetchUnread);
+
+			// تنظيف لو صار hot reload الخ.
+			window.addEventListener('beforeunload', function() {
+				clearInterval(timer);
+			});
+		})();
+	</script>
+	<script>
+		document.getElementById('logoutLink')?.addEventListener('click', function(e) {
+			e.preventDefault();
+			Swal.fire({
+				title: 'Are you sure?',
+				text: 'You will be signed out.',
+				icon: 'warning',
+				showCancelButton: true,
+				confirmButtonColor: '#d33',
+				confirmButtonText: 'Yes, logout',
+				cancelButtonText: 'Cancel'
+			}).then((result) => {
+				if (result.isConfirmed) {
+					document.getElementById('logoutForm').submit();
+				}
+			});
+		});
+	</script>
+
+	<script>
+		document.getElementById('logoutLink').addEventListener('click', function(e) {
+			e.preventDefault();
+			Swal.fire({
+				title: 'Are you sure?',
+				text: 'You will be signed out.',
+				icon: 'warning',
+				showCancelButton: true,
+				confirmButtonColor: '#d33',
+				confirmButtonText: 'Yes, logout',
+				cancelButtonText: 'Cancel'
+			}).then((result) => {
+				if (result.isConfirmed) {
+					document.getElementById('logoutForm').submit();
+				}
+			});
+		});
+	</script>
+	<script>
+		document.addEventListener('DOMContentLoaded', function() {
+			const link = document.getElementById('dropdownLogoutLink');
+			const form = document.getElementById('dropdownLogoutForm');
+
+			link.addEventListener('click', function(e) {
+				e.preventDefault();
+				Swal.fire({
+					title: 'Are you sure?',
+					text: 'You will be signed out.',
+					icon: 'warning',
+					showCancelButton: true,
+					confirmButtonColor: '#d33',
+					cancelButtonColor: '#6c757d',
+					confirmButtonText: 'Yes, logout',
+					cancelButtonText: 'Cancel'
+				}).then((result) => {
+					if (result.isConfirmed) {
+						form.submit();
+					}
+				});
+			});
 		});
 	</script>
 

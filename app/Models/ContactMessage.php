@@ -9,4 +9,5 @@ class ContactMessage extends Model
 {
     use HasFactory;
     protected $guarded = [];
+    protected $casts = ['read_at' => 'datetime'];
 }

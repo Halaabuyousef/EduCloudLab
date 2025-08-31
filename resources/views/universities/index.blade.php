@@ -17,18 +17,24 @@
         </div>
     </div>
 
-    @if(session('msg'))
-    <div id="alertBox" class="alert alert-{{ session('type') }} alert-dismissible fade show" role="alert">
+    {{-- Alerts --}}
+    @if (session('msg'))
+    <div id="alertBox"
+        class="alert alert-{{ session('type') }} alert-dismissible fade show"
+        role="alert"
+        style="background-color: #dcd0f7; color: #000;">
         {{ session('msg') }}
-        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
     <script>
-        setTimeout(() => {
-            let el = document.getElementById('alertBox');
-            if (el) {
-                new bootstrap.Alert(el).close();
+        setTimeout(function() {
+            let alertEl = document.getElementById('alertBox');
+            if (alertEl) {
+                // Bootstrap 5 way to close programmatically
+                let alert = new bootstrap.Alert(alertEl);
+                alert.close();
             }
-        }, 1800);
+        }, 1000);
     </script>
     @endif
 
