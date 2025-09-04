@@ -41,8 +41,7 @@ RUN docker-php-ext-configure gd \
 # Composer
 COPY --from=composer:2.7 /usr/bin/composer /usr/bin/composer
 
-# نزّل باكدجات Laravel
-RUN composer install --no-dev --optimize-autoloader
+RUN composer install --no-interaction --prefer-dist --optimize-autoloader --no-dev
 
 # سكربت النشر
 COPY scripts/00-laravel-deploy.sh /usr/local/bin/laravel-deploy.sh
