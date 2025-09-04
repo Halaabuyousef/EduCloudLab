@@ -1,25 +1,34 @@
-FROM webdevops/php-nginx:8.2-alpine
+# Use official PHP image
+FROM php:8.2-fpm
 
-WORKDIR /var/www/html
+# Install system dependencies
+RUN apt-get update && apt-get install -y \
+    libpng-dev \
+    libonig-dev \
+    libxml2-dev \
+    zip \
+    unzip \
+    git \
+    curl \
+    && docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd
 
-# System deps
-RUN apk --no-cache add \
-    libpng-dev libjpeg-turbo-dev freetype-dev oniguruma-dev \
-    libxml2-dev postgresql-dev git curl zip unzip
-
-# PHP extensions
-RUN docker-php-ext-configure gd --with-freetype --with-jpeg \
- && docker-php-ext-install pdo pdo_mysql pdo_pgsql mbstring exif pcntl bcmath gd
-
-# Composer
+# Install Composer
 COPY --from=composer:2.7 /usr/bin/composer /usr/bin/composer
 
-# Project files
+# Set working directory
+WORKDIR /var/www
+
+# Copy existing application
 COPY . .
 
-# Install Laravel deps
-RUN composer install --no-interaction --prefer-dist --optimize-autoloader --no-dev
+# Install PHP dependencies
+RUN composer install --no-dev --optimize-autoloader
 
-# Nginx vhost
-RUN mkdir -p /opt/docker/etc/nginx
-COPY conf/nginx/nginx-site.c
+# Copy default nginx config
+COPY ./docker/nginx.conf /etc/nginx/conf.d/default.conf
+
+# Expose port 80
+EXPOSE 80
+
+# Start php-fpm server
+CMD ["php-fpm"]
