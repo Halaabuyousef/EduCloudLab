@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use Carbon\Carbon;
 use App\Models\Experiment;
 use App\Models\Reservation;
+use App\Services\FcmService;
 use Illuminate\Http\Request;
 use App\Models\ReservationHold;
 use Illuminate\Validation\Rule;
@@ -91,8 +92,17 @@ class ReservationController extends Controller
                 'end_time'      => $end,
                 'status'        => 'pending', 
             ]);
-            
-           $request->user()->notify(new ReservationCreatedNotification($reservation));
+            $request->user()->notify(new ReservationCreatedNotification($reservation));
+     
+
+        //     $fcm = new FcmService();
+        //     $fcm->sendToUser(
+        //         $reservation->user,
+        //         "Reservation Confirmed 🎉",
+        //         "Your reservation #{$reservation->id} has been approved.",
+        //         ['reservation_id' => $reservation->id]
+        //     );
+
 
             return response()->json([
                 'success' => true,
@@ -107,5 +117,8 @@ class ReservationController extends Controller
                 ],
             ], 201);
         });
+
+      
     }
+
 }

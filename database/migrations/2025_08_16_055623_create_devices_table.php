@@ -16,7 +16,7 @@ return new class extends Migration
             $table->string('name');
             $table->string('image')->nullable();
             $table->string('type'); // esp32, sensor, motor...
-            $table->enum('status', ['online', 'offline'])->default('offline');
+            $table->string('status')->default('offline');
             // $table->foreignId('experiment_id')->nullable()->constrained()->onDelete('set null');
             $table->timestamp('last_update')->nullable();
             $table->timestamps();

@@ -11,9 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('reservations', function (Blueprint $table) {
-            $table->bigInteger('session_token_id')->nullable()->index();
-            $table->dateTime('activated_at')->nullable();
+        Schema::table('users', function (Blueprint $table) {
+            $table->text('fcm_token')->nullable();
         });
     }
 
@@ -22,7 +21,7 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('reservations', function (Blueprint $table) {
+        Schema::table('users', function (Blueprint $table) {
             //
         });
     }

@@ -248,4 +248,19 @@ class UserAuthController extends Controller
             'message' => 'Password updated successfully',
         ]);
     }
+    public function updateFcmToken(Request $request)
+    {
+        $request->validate([
+            'fcm_token' => 'required|string',
+        ]);
+
+        $user = $request->user();
+        $user->fcm_token = $request->fcm_token;
+        $user->save();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'FCM token updated successfully'
+        ]);
+    }
 }

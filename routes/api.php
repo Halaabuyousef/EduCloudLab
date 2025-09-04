@@ -62,6 +62,8 @@ Route::prefix('v1/auth/users')->group(function () {
             //الحجوزات
             Route::post('reservations', [ReservationController::class, 'store'])
                 ->name('ReservationCreatedNotification');
+//اشعار فلاتر
+            Route::post('update-fcm-token', [UserAuthController::class, 'updateFcmToken']);
         });
         // الإشعارات
         Route::get('notifications', [NotificationController::class, 'index'])

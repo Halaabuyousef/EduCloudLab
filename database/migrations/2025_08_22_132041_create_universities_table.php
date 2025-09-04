@@ -19,7 +19,7 @@ return new class extends Migration
             $table->string('city')->nullable();
             $table->string('email_domain')->nullable();  // example.edu (للتحقّق إن رغبت)
             $table->string('logo')->nullable();
-            $table->enum('status', ['active', 'inactive'])->default('active');
+            $table->string('status')->default('active');
             $table->timestamps();
         });
     }

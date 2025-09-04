@@ -13,7 +13,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('reservations', function (Blueprint $table) {
-            DB::statement("ALTER TABLE reservations MODIFY status ENUM('pending','active','postponed','completed','cancelled') NOT NULL");
+            $table->string('status')->default('pending')->change();
         });
     }
 
@@ -23,7 +23,8 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('reservations', function (Blueprint $table) {
-            DB::statement("ALTER TABLE reservations MODIFY status ENUM('pending','active','completed','cancelled') NOT NULL");
+         
+            $table->string('status')->change();
         });
     }
 };

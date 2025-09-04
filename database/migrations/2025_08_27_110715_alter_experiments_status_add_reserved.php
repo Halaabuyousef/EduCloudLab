@@ -7,25 +7,31 @@ use Illuminate\Database\Migrations\Migration;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
-        DB::statement("ALTER TABLE experiments 
-            MODIFY status ENUM('available','reserved','in_use','maintenance') 
-            NOT NULL DEFAULT 'available'");
+        $driver = Schema::getConnection()->getDriverName();
+
+        if ($driver === 'mysql') {
+          
+            DB::statement("ALTER TABLE experiments MODIFY COLUMN status VARCHAR(20) NOT NULL DEFAULT 'available'");
+        } elseif ($driver === 'pgsql') {
+            
+            DB::statement("ALTER TABLE experiments ALTER COLUMN status TYPE VARCHAR(20) USING status::text");
+            DB::statement("ALTER TABLE experiments ALTER COLUMN status SET DEFAULT 'available'");
+            DB::statement("ALTER TABLE experiments ALTER COLUMN status SET NOT NULL");
+        }
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
-        Schema::table('experiments', function (Blueprint $table) {
-            DB::statement("ALTER TABLE experiments 
-            MODIFY status ENUM('available','in_use','maintenance') 
-            NOT NULL DEFAULT 'available'");
-        });
+        $driver = Schema::getConnection()->getDriverName();
+
+        if ($driver === 'mysql') {
+        
+            DB::statement("ALTER TABLE experiments MODIFY COLUMN status ENUM('available','in_use','maintenance') NOT NULL DEFAULT 'available'");
+        } elseif ($driver === 'pgsql') {
+         
+            DB::statement("ALTER TABLE experiments ALTER COLUMN status DROP DEFAULT");
+        }
     }
 };

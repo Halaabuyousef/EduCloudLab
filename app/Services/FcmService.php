@@ -20,9 +20,7 @@ class FcmService
         $this->messaging = $factory->createMessaging();
     }
 
-    /**
-     * أرسل إشعار لتوكن واحد.
-     */
+
     public function sendToToken(string $token, string $title, string $body, array $data = []): bool
     {
         try {
@@ -40,15 +38,12 @@ class FcmService
         }
     }
 
-    /**
-     * أرسل إشعار لجميع أجهزة المستخدم (جدول device_tokens مرتبط بالمستخدم).
-     * يعيد عدد الأجهزة التي تم الإرسال لها بنجاح.
-     */
+
     public function sendToUser(User $user, string $title, string $body, array $data = []): int
     {
         $sent = 0;
 
-        // تأكد أن لديك علاقة deviceTokens() على موديل User
+   
         foreach ($user->deviceTokens as $dt) {
             if ($this->sendToToken($dt->token, $title, $body, $data)) {
                 $sent++;

@@ -3,13 +3,15 @@
 namespace App\Providers;
 
 use App\Models\Reservation;
+use App\Services\FcmService;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\View;
 use App\Observers\ReservationObserver;
 use Illuminate\Support\ServiceProvider;
-use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Cache\RateLimiting\Limit;
-use Illuminate\Http\Request;
+use App\Notifications\Channels\FcmChannel;
+use Illuminate\Support\Facades\RateLimiter;
 
 
 class AppServiceProvider extends ServiceProvider
@@ -27,6 +29,11 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        $this->app->when(FcmChannel::class)
+            ->needs(FcmService::class)
+            ->give(fn() => new FcmService());
+
+            
         RateLimiter::for('api', function (Request $request) {
             return Limit::perMinute(60)->by(optional($request->user())->id ?: $request->ip());
         });

@@ -16,7 +16,7 @@ return new class extends Migration
             $table->string('name');      
             $table->string('type');  
             $table->foreignId('device_id')->constrained()->cascadeOnDelete();
-            $table->enum('status', ['online', 'offline'])->default('offline');
+            $table->string('status')->default('offline');
             $table->softDeletes();
             $table->timestamps();
             

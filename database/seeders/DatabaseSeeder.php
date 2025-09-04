@@ -16,7 +16,7 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         $this->call(RolesAndPermissionsSeeder::class);
-        // \App\Models\User::factory(10)->create();
+        \App\Models\User::factory(10)->create();
 
         // \App\Models\User::create([
         //     'name' => 'User8',
@@ -30,9 +30,9 @@ class DatabaseSeeder extends Seeder
         //     'password'=>Hash::make('123456789')
         // ]);
         // \App\Models\Admin::create([
-        //     'name' => 'Hala Aboyousef',
-        //     'email' => 'halaaboyousef01@example.com',
-        //     'password' => Hash::make('123456789')
+        //     'name' => 'Hala Abo Yousef',
+        //     'email' => 'halaaboyousef02@gmail.com',
+        //     'password' => Hash::make('hala123456')
         // ]);
         // \App\Models\Supervisor::create([
         //     'name' => 'Supervisor',

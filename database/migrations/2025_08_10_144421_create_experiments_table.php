@@ -17,7 +17,7 @@ return new class extends Migration
             $table->text('description')->nullable();
             $table->string('image')->nullable();
             // $table->foreignId('device_id')->unique();
-            $table->enum('status', ['available', 'in_use', 'maintenance'])->default('available');
+            $table->string('status')->default('available');
             $table->foreignId('user_id')->nullable()->constrained('admins')->nullOnDelete();
             $table->integer('duration')->default(30);
             $table->timestamps();
