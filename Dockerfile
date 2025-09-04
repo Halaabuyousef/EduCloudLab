@@ -1,37 +1,25 @@
 FROM php:8.2-apache
 
-# ثبّت المكتبات المطلوبة
-RUN apt-get update && apt-get install -y \
-    libpq-dev \
-    zip unzip git curl \
-    && docker-php-ext-install pdo pdo_pgsql
+# تثبيت إضافات PHP: pdo_pgsql (لـ PostgreSQL)
+RUN apt-get update && apt-get install -y libpq-dev \
+    && docker-php-ext-install pdo_pgsql
 
-# فعّل mod_rewrite
+# تمكين mod_rewrite (مطلوب للـ Laravel routes)
 RUN a2enmod rewrite
 
-# عدل الـ VirtualHost عشان يشير إلى public/
-RUN echo '<VirtualHost *:80>\n\
-    DocumentRoot /var/www/html/public\n\
-    <Directory /var/www/html/public>\n\
-        Options Indexes FollowSymLinks\n\
-        AllowOverride All\n\
-        Require all granted\n\
-    </Directory>\n\
-</VirtualHost>' > /etc/apache2/sites-available/000-default.conf
-
-# انسخ المشروع
+# تعيين مجلد العمل
 WORKDIR /var/www/html
-COPY . .
 
-# Composer
-COPY --from=composer:2.7 /usr/bin/composer /usr/bin/composer
-RUN composer install --no-dev --optimize-autoloader
+# نسخ المشروع داخل الحاوية
+COPY . /var/www/html
 
-# كاش Laravel
-RUN php artisan config:clear && php artisan config:cache && php artisan route:cache && php artisan view:cache
+# إضافة ملف إعداد Apache مخصص يوجه للـ public/
+COPY conf/laravel-apache.conf /etc/apache2/sites-available/laravel.conf
+RUN a2dissite 000-default && a2ensite laravel
 
-# صلاحيات
-RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
+# صلاحيات مجلدات Laravel التي تحتاج كتابة
+RUN chown -R www-data:www-data /var/www/html \
+ && chmod -R 775 storage bootstrap/cache
 
-EXPOSE 10000
+EXPOSE 80
 CMD ["apache2-foreground"]
