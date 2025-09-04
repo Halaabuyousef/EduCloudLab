@@ -1,24 +1,25 @@
-FROM webdevops/php-nginx:8.2
+FROM webdevops/php-nginx:8.2-alpine
 
-# تحديد مجلد العمل
 WORKDIR /var/www/html
 
-# نسخ كل الملفات
-COPY . /var/www/html
+# System deps
+RUN apk --no-cache add \
+    libpng-dev libjpeg-turbo-dev freetype-dev oniguruma-dev \
+    libxml2-dev postgresql-dev git curl zip unzip
 
-# تثبيت المكتبات
-RUN composer install --no-dev --optimize-autoloader
+# PHP extensions
+RUN docker-php-ext-configure gd --with-freetype --with-jpeg \
+ && docker-php-ext-install pdo pdo_mysql pdo_pgsql mbstring exif pcntl bcmath gd
 
-# متغيرات البيئة
-ENV APP_ENV=production
-ENV APP_DEBUG=false
-ENV LOG_CHANNEL=stack
+# Composer
+COPY --from=composer:2.7 /usr/bin/composer /usr/bin/composer
 
-# الكاش
-RUN php artisan config:cache && \
-    php artisan route:cache && \
-    php artisan view:cache
+# Project files
+COPY . .
 
-EXPOSE 80
+# Install Laravel deps
+RUN composer install --no-interaction --prefer-dist --optimize-autoloader --no-dev
 
-CMD ["supervisord"]
+# Nginx vhost
+RUN mkdir -p /opt/docker/etc/nginx
+COPY conf/nginx/nginx-site.c
