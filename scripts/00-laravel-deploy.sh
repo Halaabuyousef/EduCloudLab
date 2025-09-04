@@ -1,21 +1,36 @@
-#!/usr/bin/env bash
+#!/bin/sh
 set -e
 
-echo "👉 Installing PHP dependencies (Composer)..."
-composer install --no-dev --optimize-autoloader
+echo "🚀 Running Laravel deploy script..."
 
-echo "👉 Running migrations..."
-php artisan migrate --force || echo "⚠️ Migration step failed or already up to date."
+# تأكد إنك داخل مجلد المشروع
+cd /var/www/html
 
-echo "👉 Clearing caches..."
-php artisan cache:clear || true
-php artisan config:clear || true
-php artisan route:clear || true
-php artisan view:clear || true
+# أعطِ صلاحيات للمجلدات اللي Laravel يحتاجها
+chmod -R 775 storage bootstrap/cache
+chown -R www-data:www-data storage bootstrap/cache
 
-echo "👉 Caching config & routes..."
-php artisan config:cache || true
-php artisan route:cache || true
-php artisan view:cache || true
+# نسخ/تجهيز .env من متغيرات Render
+if [ ! -f .env ]; then
+  echo "APP_KEY=$APP_KEY" > .env
+  echo "APP_ENV=$APP_ENV" >> .env
+  echo "APP_DEBUG=$APP_DEBUG" >> .env
+  echo "APP_URL=$APP_URL" >> .env
+  echo "DB_CONNECTION=$DB_CONNECTION" >> .env
+  echo "DATABASE_URL=$DATABASE_URL" >> .env
+fi
 
-echo "✅ Laravel deployment script finished."
+# تشغيل أوامر Laravel المعتادة للنشر
+php artisan config:clear
+php artisan cache:clear
+php artisan route:clear
+php artisan view:clear
+
+php artisan config:cache
+
+php artisan view:cache
+
+# تشغيل migrations في البيئة الحقيقية
+php artisan migrate --force
+
+echo "✅ Laravel deploy script finished!"

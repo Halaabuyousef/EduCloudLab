@@ -1,11 +1,14 @@
 @extends('master')
 @section('title' , )
 @section('content')
+
+{!! NoCaptcha::display() !!}
+
 <section class="login-section">
     <div class="login-container">
         <div class="login-illustration">
             <h2>مرحبًا بعودتك!</h2>
-           
+
             <img src="https://cdn.dribbble.com/users/1577044/screenshots/6539426/authentication.png" alt="تسجيل الدخول">
         </div>
 

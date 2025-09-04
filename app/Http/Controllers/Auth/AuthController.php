@@ -24,8 +24,13 @@ class AuthController extends Controller
         return view($guard.'.login', compact('guard'));
     }
 
+
     function login(Request $request)
     {
+        $request->validate([
+            'g-recaptcha-response' => 'required|captcha'
+        ]);
+
         $guard = $request->route('guard');
 
         $data = $request->validate([

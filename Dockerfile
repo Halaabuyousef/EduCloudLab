@@ -1,21 +1,15 @@
-# صورة فيها PHP 8.2 + Nginx جاهزين
+# صورة PHP 8.2 + Nginx جاهزة
 FROM webdevops/php-nginx:8.2-alpine
 
 # إعداد مجلد العمل
 WORKDIR /var/www/html
 
-# انسخ المشروع
-COPY . .
-
-# تأكد من وجود مجلد إعدادات Nginx ثم انسخ ملفك
-RUN mkdir -p /opt/docker/etc/nginx
-COPY conf/nginx/nginx-site.conf /opt/docker/etc/nginx/vhost.conf
-
-# ثبّت مكتبات النظام اللي يحتاجها Laravel
+# --- ثبّت مكتبات النظام اللي يحتاجها Laravel ---
 RUN apk --no-cache add \
     libpng-dev \
     libjpeg-turbo-dev \
     freetype-dev \
+    libjpeg-turbo-dev \
     oniguruma-dev \
     libxml2-dev \
     postgresql-dev \
@@ -24,7 +18,7 @@ RUN apk --no-cache add \
     zip \
     unzip
 
-# ثبّت امتدادات PHP (بعد ما نزلنا المكتبات)
+# --- ثبّت امتدادات PHP ---
 RUN docker-php-ext-configure gd \
         --with-freetype \
         --with-jpeg \
@@ -38,12 +32,20 @@ RUN docker-php-ext-configure gd \
         bcmath \
         gd
 
-# Composer
+# --- Composer ---
 COPY --from=composer:2.7 /usr/bin/composer /usr/bin/composer
 
+# --- انسخ المشروع (بعد ما جهزت بيئة PHP & system) ---
+COPY . .
+
+# --- Composer install (بدون dev) ---
 RUN composer install --no-interaction --prefer-dist --optimize-autoloader --no-dev
 
-# سكربت النشر
+# --- انسخ إعدادات Nginx ---
+RUN mkdir -p /opt/docker/etc/nginx
+COPY conf/nginx/nginx-site.conf /opt/docker/etc/nginx/vhost.conf
+
+# --- سكربت النشر ---
 COPY scripts/00-laravel-deploy.sh /usr/local/bin/laravel-deploy.sh
 RUN chmod +x /usr/local/bin/laravel-deploy.sh
 
