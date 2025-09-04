@@ -1,5 +1,7 @@
+# صورة فيها PHP 8.2 + Nginx جاهزين
 FROM webdevops/php-nginx:8.2-alpine
 
+# إعداد مجلد العمل
 WORKDIR /var/www/html
 
 # انسخ المشروع
@@ -9,7 +11,7 @@ COPY . .
 RUN mkdir -p /opt/docker/etc/nginx
 COPY conf/nginx/nginx-site.conf /opt/docker/etc/nginx/vhost.conf
 
-# ثبّت مكتبات النظام اللي Laravel يحتاجها
+# ثبّت مكتبات النظام اللي يحتاجها Laravel
 RUN apk --no-cache add \
     libpng-dev \
     libjpeg-turbo-dev \
@@ -22,7 +24,7 @@ RUN apk --no-cache add \
     zip \
     unzip
 
-# ثبّت امتدادات PHP
+# ثبّت امتدادات PHP (بعد ما نزلنا المكتبات)
 RUN docker-php-ext-configure gd \
         --with-freetype \
         --with-jpeg \
@@ -46,6 +48,8 @@ RUN composer install --no-dev --optimize-autoloader
 COPY scripts/00-laravel-deploy.sh /usr/local/bin/laravel-deploy.sh
 RUN chmod +x /usr/local/bin/laravel-deploy.sh
 
+# Laravel لازم يستخدم public
 ENV WEB_DOCUMENT_ROOT=/var/www/html/public
 
+# البورت
 EXPOSE 80
