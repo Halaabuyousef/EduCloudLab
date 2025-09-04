@@ -15,15 +15,15 @@ return new class extends Migration
             $table->id();
             $table->foreignId('experiment_id')->constrained()->cascadeOnDelete();
             $table->foreignId('user_id')->constrained()->cascadeOnDelete();
-            $table->dateTime('starts_at');
-            $table->dateTime('ends_at');
+            $table->dateTime('start_time');
+            $table->dateTime('end_time');
             $table->dateTime('expires_at'); // TTL
 
             $table->string('reason')->nullable();
             $table->timestamps();
 
-            $table->index(['experiment_id', 'starts_at']);
-            $table->index(['experiment_id', 'ends_at']);
+            $table->index(['experiment_id', 'start_time']);
+            $table->index(['experiment_id', 'end_time']);
             $table->index(['expires_at']);
         });
     }

@@ -15,7 +15,7 @@ class DashboardController extends Controller
 {
     public function index(Request $request)
     {
-        // 🔹 الإحصائيات العامة
+ 
         $stats = [
             'users'                 => User::count(),
             'supervisors'           => Supervisor::count(),
@@ -27,7 +27,7 @@ class DashboardController extends Controller
             'experiments_available' => Experiment::where('status', 'available')->count(),
         ];
 
-        // 🔹 توزيع حالات التجارب (Pie Chart)
+  
         $expStatus = [
             'available'   => Experiment::where('status', 'available')->count(),
             'reserved'    => Experiment::where('status', 'reserved')->count(),
@@ -35,7 +35,7 @@ class DashboardController extends Controller
             'maintenance' => Experiment::where('status', 'maintenance')->count(),
         ];
 
-        // 🔹 حجوزات آخر 7 أيام (Line Chart)
+    
         $labels = [];
         $counts = [];
         for ($i = 6; $i >= 0; $i--) {
@@ -54,7 +54,7 @@ class DashboardController extends Controller
             ->limit(8)
             ->get();
 
-        // 🟢 لو طلب المستخدم JSON (مثلاً /admin/dashboard?json=1)
+        
         if ($request->wantsJson() || $request->query('json')) {
             return response()->json([
                 'stats'               => $stats,

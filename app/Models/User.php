@@ -2,14 +2,15 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Laravel\Sanctum\HasApiTokens;
 use Spatie\Permission\Traits\HasRoles;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 
-class User extends Authenticatable
+class User extends Authenticatable implements MustVerifyEmail
 {
     use HasApiTokens, HasFactory, Notifiable, HasRoles;
     protected $guard_name = 'web';
@@ -23,6 +24,11 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'phone',
+        'location',
+        'bio',
+    
+        'image',
     ];
 
     /**
@@ -44,7 +50,10 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
     ];
-
+    public function sendEmailVerificationNotification()
+    {
+        $this->notify(new \App\Notifications\VerifyUserEmailNotification);
+    }
     public function deviceTokens()
     {
         return $this->hasMany(\App\Models\DeviceToken::class);
@@ -74,5 +83,9 @@ class User extends Authenticatable
     public function scopeAttached($q)
     {
         return $q->whereNotNull('supervisor_id');
+    }
+    public function getImageUrlAttribute()
+    {
+        return $this->image ? Storage::url($this->image) : null;
     }
 }

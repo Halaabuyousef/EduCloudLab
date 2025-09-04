@@ -11,6 +11,8 @@ use Illuminate\Validation\ValidationException;
 
 class LoginRequest extends FormRequest
 {
+   
+  
     /**
      * Determine if the user is authorized to make this request.
      */
@@ -29,6 +31,7 @@ class LoginRequest extends FormRequest
         return [
             'email' => ['required', 'string', 'email'],
             'password' => ['required', 'string'],
+            'device_name' => ['required', 'string', 'max:100'],
         ];
     }
 

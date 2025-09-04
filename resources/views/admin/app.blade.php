@@ -5343,7 +5343,7 @@ License: For each use you must have a valid license purchased only from above li
 	</script>
 	<script>
 		(function() {
-			const BADGE_URL = @json(route('admin.contacts.badge')); // يرجع { unread: N }
+			/*const BADGE_URL = @json(route('admin.contacts.badge')); // يرجع { unread: N }*/
 			const badgeEl = document.getElementById('contactBadge');
 
 			async function fetchUnread() {

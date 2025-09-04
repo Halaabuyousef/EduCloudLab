@@ -9,12 +9,16 @@
     <div class="d-flex justify-content-between align-items-center mb-6">
         <h2 class="mb-0">All Experiments</h2>
         <div class="d-flex gap-3">
+            @can('experiments.create')
             <button type="button" class="btn btn-light-primary" data-bs-toggle="modal" data-bs-target="#add-modal">
                 <i class="fas fa-plus me-2"></i>Add Experiment
             </button>
+            @endcan
+            @cannot('experiments.delete')
             <a href="{{ route('admin.experiments.trash') }}" class="btn btn-light-danger">
                 <i class="fas fa-trash me-2"></i>Trashed Experiments
             </a>
+            @endcannot
         </div>
     </div>
     @if (session('msg'))

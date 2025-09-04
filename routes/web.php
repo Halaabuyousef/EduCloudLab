@@ -63,7 +63,8 @@ require __DIR__ . '/auth.php';
 
 
 Route::prefix('admin')->name('admin.')->middleware(['guest:admin'])->group(function () {
-    Route::get('login', [AuthController::class, 'indexLogin'])->name('login')->defaults('guard', 'admin');
+
+    Route::get('login', [AuthController::class, 'indexLogin'])->name('.login')->defaults('guard', 'admin');
     Route::post('login', [AuthController::class, 'login'])->name('login.submit')->defaults('guard', 'admin');
 
 });

@@ -39,10 +39,16 @@ class Kernel extends HttpKernel
             \App\Http\Middleware\VerifyCsrfToken::class,
             \Illuminate\Routing\Middleware\SubstituteBindings::class,
         ],
-
+      
         'api' => [
+
+
+            \Laravel\Sanctum\Http\Middleware\EnsureFrontendRequestsAreStateful::class,
+            'throttle:api',
+            \Illuminate\Routing\Middleware\SubstituteBindings::class,
+
             // \Laravel\Sanctum\Http\Middleware\EnsureFrontendRequestsAreStateful::class,
-            \Illuminate\Routing\Middleware\ThrottleRequests::class.':api',
+            \Illuminate\Routing\Middleware\ThrottleRequests::class . ':api',
             \Illuminate\Routing\Middleware\SubstituteBindings::class,
         ],
     ];
@@ -69,5 +75,8 @@ class Kernel extends HttpKernel
         // 'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
         'authin' =>        CheckAuthUserByGuard::class,
         'verfied.guard' => EmailVerifiedByGuard::class,
+        'abilities' => \Laravel\Sanctum\Http\Middleware\CheckForAnyAbility::class,
+        'ability'   => \Laravel\Sanctum\Http\Middleware\CheckAbilities::class,
+        'experiment.session' => \App\Http\Middleware\EnsureExperimentSessionIsActive::class,
     ];
 }

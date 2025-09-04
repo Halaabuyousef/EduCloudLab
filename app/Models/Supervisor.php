@@ -8,10 +8,14 @@ use Illuminate\Notifications\Notifiable;
 use App\Notifications\ForgetPasswordNotification;
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Laravel\Sanctum\HasApiTokens;
+use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Contracts\Auth\MustVerifyEmail;
 
-class Supervisor extends Model
+
+class Supervisor extends Authenticatable implements MustVerifyEmail
 {
-    use Notifiable, HasFactory, HasRoles;
+    use HasApiTokens, Notifiable, HasFactory, HasRoles;
     protected $guarded = [];
     protected $guard_name = 'supervisor';
     public function sendPasswordResetNotification($token)
@@ -26,5 +30,9 @@ class Supervisor extends Model
     public function university()
     {
         return $this->belongsTo(University::class);
+    }
+    public function sendEmailVerificationNotification()
+    {
+        $this->notify(new \App\Notifications\VerifySupervisorEmailNotification);
     }
 }

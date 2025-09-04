@@ -5,7 +5,7 @@
     <div class="login-container">
         <div class="login-illustration">
             <h2>مرحبًا بعودتك!</h2>
-            <p>سجل دخولك الآن للوصول إلى آلاف المشاريع والفرص الاستثنائية في أكبر منصة عمل حر عربية</p>
+           
             <img src="https://cdn.dribbble.com/users/1577044/screenshots/6539426/authentication.png" alt="تسجيل الدخول">
         </div>
 

@@ -15,6 +15,7 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
+        $this->call(RolesAndPermissionsSeeder::class);
         // \App\Models\User::factory(10)->create();
 
         // \App\Models\User::create([
@@ -43,28 +44,28 @@ class DatabaseSeeder extends Seeder
         // $this->call([
         //     AdminSeeder::class,
         // ]);
-        Reservation::factory()->create([
-            'user_id' => 1,
-            'experiment_id' => 1,
-            'start_time' => now()->addMinutes(5),
-            'end_time'   => now()->addMinutes(30),
-            'status' => 'pending',
-        ]);
+        // Reservation::factory()->create([
+        //     'user_id' => 1,
+        //     'experiment_id' => 1,
+        //     'start_time' => now()->addMinutes(5),
+        //     'end_time'   => now()->addMinutes(30),
+        //     'status' => 'pending',
+        // ]);
 
-        \App\Models\Reservation::factory()->create([
-            'user_id' => 1,
-            'experiment_id' => 1,
-            'start_time' => now()->subSeconds(30),
-            'end_time'   => now()->addMinutes(20),
-            'status' => 'active',
-        ]);
+        // \App\Models\Reservation::factory()->create([
+        //     'user_id' => 1,
+        //     'experiment_id' => 1,
+        //     'start_time' => now()->subSeconds(30),
+        //     'end_time'   => now()->addMinutes(20),
+        //     'status' => 'active',
+        // ]);
 
-        \App\Models\Reservation::factory()->create([
-            'user_id' => 1,
-            'experiment_id' => 1,
-            'start_time' => now()->subMinutes(40),
-            'end_time'   => now()->subSeconds(30),
-            'status' => 'completed',
-        ]);
+        // \App\Models\Reservation::factory()->create([
+        //     'user_id' => 1,
+        //     'experiment_id' => 1,
+        //     'start_time' => now()->subMinutes(40),
+        //     'end_time'   => now()->subSeconds(30),
+        //     'status' => 'completed',
+        // ]);
     }
 }

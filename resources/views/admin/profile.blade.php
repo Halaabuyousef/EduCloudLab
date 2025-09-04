@@ -30,7 +30,7 @@
                 </div>
 
                 <div class="mb-3">
-                    <label class="form-label">Email (optional)</label>
+                    <label class="form-label">Email </label>
                     <input type="email" name="email" value="{{ old('email',$admin->email) }}"
                         class="form-control @error('email') is-invalid @enderror" />
                     @error('email') <div class="invalid-feedback">{{ $message }}</div> @enderror
