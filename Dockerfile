@@ -26,3 +26,4 @@ EXPOSE 10000
 
 # Apache will auto-start on port 10000
 CMD ["apache2-foreground"]
+#اه
