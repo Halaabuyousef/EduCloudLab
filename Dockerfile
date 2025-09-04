@@ -1,34 +1,28 @@
-# Use official PHP image
-FROM php:8.2-fpm
+# Use PHP with Apache (أسهل من php-fpm + nginx)
+FROM php:8.2-apache
 
-# Install system dependencies
+# Install dependencies
 RUN apt-get update && apt-get install -y \
-    libpng-dev \
-    libonig-dev \
-    libxml2-dev \
-    zip \
-    unzip \
-    git \
-    curl \
-    && docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd
+    libpq-dev \
+    zip unzip git curl \
+    && docker-php-ext-install pdo pdo_pgsql
 
-# Install Composer
-COPY --from=composer:2.7 /usr/bin/composer /usr/bin/composer
+# Enable Apache mod_rewrite
+RUN a2enmod rewrite
 
-# Set working directory
-WORKDIR /var/www
-
-# Copy existing application
+# Copy project
+WORKDIR /var/www/html
 COPY . .
 
-# Install PHP dependencies
+# Install composer
+COPY --from=composer:2.7 /usr/bin/composer /usr/bin/composer
 RUN composer install --no-dev --optimize-autoloader
 
-# Copy default nginx config
-COPY ./docker/nginx.conf /etc/nginx/conf.d/default.conf
+# Give permissions for Laravel storage
+RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
 
-# Expose port 80
-EXPOSE 80
+# Expose Render port
+EXPOSE 10000
 
-# Start php-fpm server
-CMD ["php-fpm"]
+# Apache will auto-start on port 10000
+CMD ["apache2-foreground"]
