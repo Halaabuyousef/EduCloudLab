@@ -1,21 +1,29 @@
-FROM richarvey/nginx-php-fpm:1.7.2
+# استخدم PHP 8.2 مع FPM
+FROM php:8.2-fpm
 
+# ثبّت أدوات النظام وامتدادات PHP اللي Laravel يحتاجها
+RUN apt-get update && apt-get install -y \
+    git curl libpng-dev libonig-dev libxml2-dev zip unzip libpq-dev \
+    && docker-php-ext-install pdo pdo_mysql pdo_pgsql mbstring exif pcntl bcmath gd
 
+# ثبّت Composer
+COPY --from=composer:2.7 /usr/bin/composer /usr/bin/composer
+
+# أنشئ مجلد العمل
+WORKDIR /var/www/html
+
+# انسخ ملفات المشروع
 COPY . .
 
+# انسخ إعدادات Nginx (لازم يكون عندك nginx.conf جاهز بمجلد conf/nginx)
+COPY conf/nginx/nginx-site.conf /etc/nginx/conf.d/default.conf
 
-ENV SKIP_COMPOSER 1
-ENV WEBROOT /var/www/html/public
-ENV PHP_ERRORS_STDERR 1
-ENV RUN_SCRIPTS 1
-ENV REAL_IP_HEADER 1
+# ثبّت الحزم
+RUN composer install --no-dev --optimize-autoloader
 
+# نسخ سكربت النشر
+COPY scripts/00-laravel-deploy.sh /usr/local/bin/laravel-deploy.sh
+RUN chmod +x /usr/local/bin/laravel-deploy.sh
 
-ENV APP_ENV production
-ENV APP_DEBUG false
-ENV LOG_CHANNEL stderr
-
-
-ENV COMPOSER_ALLOW_SUPERUSER 1
-
-CMD ["/start.sh"]
+# شغل Nginx + PHP-FPM
+CMD service nginx start && php-fpm
