@@ -27,8 +27,11 @@ class AppServiceProvider extends ServiceProvider
     /**
      * Bootstrap any application services.
      */
-    public function boot(): void
+    public function boot(\Illuminate\Routing\UrlGenerator $url): void
     {
+        if (env('APP_ENV') == 'production') {
+            $url->forceScheme('https');
+        }
         $this->app->when(FcmChannel::class)
             ->needs(FcmService::class)
             ->give(fn() => new FcmService());
