@@ -1,27 +1,24 @@
+# صورة أساسية فيها PHP + Apache
 FROM php:8.2-apache
 
-# تثبيت إضافات PHP: pdo_pgsql (لـ PostgreSQL)
-RUN apt-get update && apt-get install -y libpq-dev \
-    && docker-php-ext-install pdo_pgsql
+# تثبيت الإضافات المطلوبة للـ Laravel
+RUN apt-get update && apt-get install -y \
+    libpq-dev \
+    && docker-php-ext-install pdo pdo_mysql pdo_pgsql
 
-
+# تفعيل mod_rewrite (مطلوب للـ Laravel routes)
 RUN a2enmod rewrite
 
-
-WORKDIR /var/www/html
-
-
+# نسخ المشروع إلى مجلد السيرفر
 COPY . /var/www/html
 
+# اجعل Apache يوجّه إلى public/
+RUN sed -i 's|/var/www/html|/var/www/html/public|g' /etc/apache2/sites-available/000-default.conf \
+    && sed -i 's|/var/www/html|/var/www/html/public|g' /etc/apache2/apache2.conf
 
-COPY conf/laravel-apache.conf /etc/apache2/sites-available/laravel.conf
-RUN a2dissite 000-default && a2ensite laravel
-
-
+# صلاحيات الملفات
 RUN chown -R www-data:www-data /var/www/html \
- && chmod -R 775 storage bootstrap/cache
+    && chmod -R 755 /var/www/html
 
-EXPOSE 80
+# أمر التشغيل
 CMD ["apache2-foreground"]
-
-
