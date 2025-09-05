@@ -1,0 +1,19 @@
+services:
+  - type: web
+    name: educloudlab-web
+    env: docker
+    plan: free   # أو starter/pro حسب اختيارك
+    autoDeploy: true
+    region: oregon
+
+    envVars:
+      - key: APP_ENV
+        value: production
+      - key: APP_KEY
+        sync: false   # اتركها false وستضيفه من داشبورد Render
+      - key: APP_DEBUG
+        value: false
+      - key: APP_URL
+        value: https://educloudlab-web.onrender.com
+
+      # هنا تضيف باقي متغيرات البيئة (DB_CONNECTION, DB_HOST, DB_PORT, DB_DATABASE, DB_USERNAME, DB_PASSWORD, ...)
