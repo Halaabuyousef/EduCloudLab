@@ -44,6 +44,8 @@ License: For each use you must have a valid license purchased only from above li
 			--kt-toolbar-height: 0px !important;
 			/* يلغي ارتفاع الـ toolbar */
 		}
+
+		@vite(['resources/css/app.css', 'resources/js/app.js'])
 	</style>
 </head>
 <!--end::Head-->
